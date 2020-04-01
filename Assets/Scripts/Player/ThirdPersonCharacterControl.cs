@@ -1,23 +1,22 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class ThirdPersonCharacterControl : MonoBehaviour
+public class ThirdPersonCharacterControl : MonoBehaviour, IMovements
 {
-  public float speed;
-  Animator animatorController;
-
+  public float speed = 6f;
+  private bool isGrounded;
+  private Animator animatorController;
+  private Rigidbody rigidBody;
   void Awake()
   {
     animatorController = GetComponent<Animator>();
+    rigidBody = GetComponent<Rigidbody>();
   }
-
-  void Update()
+  private void Update()
   {
-    Movement();
+    VerticalHorizontalMove();
   }
 
-  void Movement()
+  public void VerticalHorizontalMove()
   {
     float horizontal = Input.GetAxis("Horizontal");
     float vertical = Input.GetAxis("Vertical");
@@ -27,4 +26,17 @@ public class ThirdPersonCharacterControl : MonoBehaviour
     Vector3 playerMovement = new Vector3(horizontal * 0.75f, 0f, vertical) * auxSpeed * Time.deltaTime;
     transform.Translate(playerMovement, Space.Self);
   }
+
+  public void JumpMove() { }
+
+  void OnCollisionEnter(Collision other)
+  {
+    if (other.gameObject.tag == "Ground") isGrounded = true;
+  }
+
+  void OnCollisionExit(Collision other)
+  {
+    if (other.gameObject.tag == "Ground") isGrounded = false;
+  }
+
 }
